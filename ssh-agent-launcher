@@ -14,13 +14,20 @@ error(){
 # Print usage.
 print_usage(){
 	cat <<-'EOF'
-		usage: ssh-agent-launcher <subcommand> <args>
+		usage:
+		    ssh-agent-launcher <SUBCOMMAND> [<ARGS>]
 		
-		ssh-agent-launcher help
-		ssh-agent-launcher { enable | disable } [shell]
-		
-		shell:	ssh-agent starts automatically on target shell.
-		        If no shell given, the environment variable $SHELL will be used.
+		    ssh-agent-launcher help
+		    ssh-agent-launcher { enable | disable } [<SHELL>]
+
+		SUBCOMMAND:
+		    help:       Print usage.
+		    enable:     Enable ssh-agent to start automatically specified shell.
+		    disable:    Disable ssh-agent to start automatically specified shell.
+
+		SHELL:
+		    ssh-agent starts automatically on target shell.
+		    If no shell given, the environment variable $SHELL will be used.
 		        Currently Available:
 		          - bash
 		          - dash
