@@ -3,14 +3,14 @@ APPNAME=ssh-agent-launcher
 
 .PHONY: install uninstall
 install: ${APPNAME} plugin-*
-	sudo mkdir -p "${PREFIX}/share/${APPNAME}"
-	sudo install ${APPNAME} "${PREFIX}/share/${APPNAME}";
-	sudo install marker "${PREFIX}/share/${APPNAME}";
-	sudo install common-* "${PREFIX}/share/${APPNAME}";
-	sudo install plugin-* "${PREFIX}/share/${APPNAME}";
-	sudo ln -sf "${PREFIX}/share/${APPNAME}/${APPNAME}" "${PREFIX}/bin/${APPNAME}"
+	mkdir -p "${PREFIX}/share/${APPNAME}"
+	install ${APPNAME} "${PREFIX}/share/${APPNAME}";
+	install marker "${PREFIX}/share/${APPNAME}";
+	install common-* "${PREFIX}/share/${APPNAME}";
+	install plugin-* "${PREFIX}/share/${APPNAME}";
+	ln -sf "${PREFIX}/share/${APPNAME}/${APPNAME}" "${PREFIX}/bin/${APPNAME}"
 
 uninstall:
-	sudo rm "${PREFIX}/bin/${APPNAME}"
-	sudo rm -rf "${PREFIX}/share/${APPNAME}"
+	rm "${PREFIX}/bin/${APPNAME}"
+	rm -rf "${PREFIX}/share/${APPNAME}"
 
