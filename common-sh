@@ -13,7 +13,7 @@ EOF
 # script for start ssh-agent
 HOOK_SCRIPT=$(cat <<-EOF
 	# Load last session info if ssh-agent not exist.
-	if [ -z "$SSH_AUTH_SOCK" ] && [ -f "\$HOME/$AGENT_INFO_FILE" ];	then
+	if [ -z "\$SSH_AUTH_SOCK" ] && [ -f "\$HOME/$AGENT_INFO_FILE" ];	then
 	  source "\$HOME/$AGENT_INFO_FILE" > /dev/null
 	fi
 
