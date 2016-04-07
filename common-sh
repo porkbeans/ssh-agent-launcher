@@ -1,0 +1,60 @@
+HOOK_TARGET_PATH="$HOME/$HOOK_TARGET_FILE"
+HOOK_SCRIPT_PATH="$HOME/$HOOK_SCRIPT_FILE"
+AGENT_INFO_PATH="$HOME/$AGENT_INFO_FILE"
+
+# a hook for ssh-agent in file "HOOK_TARGET_PATH"
+HOOK=$(cat <<-EOF
+	if [ -f "\$HOME/$HOOK_SCRIPT_FILE" ];then
+	  source "\$HOME/$HOOK_SCRIPT_FILE"
+	fi
+EOF
+)
+
+# script for start ssh-agent
+HOOK_SCRIPT=$(cat <<-EOF
+	# Load last session info if ssh-agent not exist.
+	if [ -z "$SSH_AUTH_SOCK" ] && [ -f "\$HOME/$AGENT_INFO_FILE" ];	then
+	  source "\$HOME/$AGENT_INFO_FILE" > /dev/null
+	fi
+
+	# Retrieve ssh-add result.
+	ssh-add -l > /dev/null
+	case \$? in
+	  0 ) echo "ssh-agent: Identity already exists.";;
+	  1 ) ssh-add;;
+	  2 ) echo -n "ssh-agent: Starting...."
+	    ssh-agent -s > "\$HOME/$AGENT_INFO_FILE"
+	    source "\$HOME/$AGENT_INFO_FILE"
+	    ssh-add
+	  ;;
+	esac
+EOF
+)
+
+agent_enable(){
+	# Remove existing section to file "HOOK_TARGET_PATH"
+	sed -i -n -e "/$HEADER/,/$FOOTER/"'!p' "$HOOK_TARGET_PATH"
+
+	# Add hook section to file "HOOK_TARGET_PATH"
+	for LINE in "$HEADER" "$HOOK" "$FOOTER"
+	do
+		echo "$LINE"
+	done >> "$HOOK_TARGET_PATH"
+
+	# Add ssh-agent launcher and empty ssh-agent info file.
+	echo "$HOOK_SCRIPT" > "$HOOK_SCRIPT_PATH"
+	touch "$AGENT_INFO_PATH"
+}
+
+agent_disable(){
+	# Remove hook section to file "HOOK_TARGET_PATH"
+	sed -i -n -e "/$HEADER/,/$FOOTER/"'!p' "$HOOK_TARGET_PATH"
+
+	# Remove ssh-agent launcher and empty ssh-agent info file.
+	for file in "$HOOK_SCRIPT_PATH" "$AGENT_INFO_PATH";do
+		if [ -f "$file" ];then
+			rm "$file"
+		fi
+	done
+}
+

@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Retrieve path to ssh-agent-launcher scripts.
+ORIGIN_SCRIPT=$(realpath "$0")
+ORIGIN=$(dirname "$ORIGIN_SCRIPT")
+
+# Print error message and exit.
+error(){
+	echo "$1" 2>&1
+	echo 'see "ssh-agent-launcher help"' 2>&1
+	exit 1
+}
+
+# Print usage.
+print_usage(){
+	cat <<-'EOF'
+		usage: ssh-agent-launcher <subcommand> <args>
+		
+		ssh-agent-launcher help
+		ssh-agent-launcher { enable | disable } [shell]
+		
+		shell:	ssh-agent starts automatically on target shell.
+		        If no shell given, the environment variable $SHELL will be used.
+		        Currently Available:
+		          - bash
+		          - dash
+		          - sh
+		          - ksh
+		          - zsh
+	EOF
+}
+
+# Assert the number of args
+assert_num_of_args(){
+	EXPECTED_NUM_OF_ARGS=${1:-"0"};shift
+	if [ "$#" -gt "$EXPECTED_NUM_OF_ARGS" ]; then
+		error "Error: too many arguments."
+	fi
+}
+
+if [ $# -lt 1 ];then
+	error "Error: too few arguments."
+fi
+
+SUBCOMMAND="$1";shift
+case "$SUBCOMMAND" in
+	"enable" | "disable" ) assert_num_of_args 1 "$@"
+		# Load the plugin specified in arguments.
+		TARGET_SHELL="$1";shift
+		TARGET_SHELL=$(basename "${TARGET_SHELL:-$SHELL}")
+
+		if [ -f "$ORIGIN/plugin-$TARGET_SHELL" ];then
+			. "$ORIGIN/plugin-$TARGET_SHELL"
+			echo "The plugin for $TARGET_SHELL loaded."
+		else
+			error "Error: plugin for shell '$TARGET_SHELL' not found"
+		fi
+
+		# Enable or disable starting ssh-agent on login shell automatically.
+		"agent_$SUBCOMMAND"
+		echo 'Complete: ssh-agent '"$SUBCOMMAND"'d.'
+	;;
+	"help" ) assert_num_of_args 0 "$@"
+		print_usage
+	;;
+	* ) error "Error: unrecognized command $1.";;
+esac
+

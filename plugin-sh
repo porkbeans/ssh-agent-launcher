@@ -1,0 +1,7 @@
+HOOK_TARGET_FILE='.shrc'
+HOOK_SCRIPT_FILE='.sh_ssh_agent'
+AGENT_INFO_FILE='.ssh-agent-info'
+
+. "$ORIGIN/marker"
+. "$ORIGIN/common-sh"
+

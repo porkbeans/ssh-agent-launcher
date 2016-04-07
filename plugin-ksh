@@ -1,0 +1,7 @@
+HOOK_TARGET_FILE='.kshrc'
+HOOK_SCRIPT_FILE='.ksh_ssh_agent'
+AGENT_INFO_FILE='.ssh-agent-info'
+
+. "$ORIGIN/marker"
+. "$ORIGIN/common-sh"
+
