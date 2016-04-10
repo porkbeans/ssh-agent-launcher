@@ -4,8 +4,9 @@ AGENT_INFO_PATH="$HOME/$AGENT_INFO_FILE"
 
 # a hook for ssh-agent in file "HOOK_TARGET_PATH"
 HOOK=$(cat <<-EOF
-	if [ -f "\$HOME/$HOOK_SCRIPT_FILE" ];then
-	  source "\$HOME/$HOOK_SCRIPT_FILE"
+	# Hook if interactive shells.
+	if [ -z "\${-%%*i*}" ] && [ -f "\$HOME/$HOOK_SCRIPT_FILE" ];then
+	    source "\$HOME/$HOOK_SCRIPT_FILE"
 	fi
 EOF
 )
